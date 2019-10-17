@@ -1,0 +1,27 @@
+name: Main workflow
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        mlton: [20180207]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Install asdf
+        run: git clone https://github.com/asdf-vm/asdf.git $HOME/asdf
+
+      - name: Install MLton and run test
+        run: |
+          . $HOME/asdf/asdf.sh
+          asdf plugin-add mlton $GITHUB_WORKSPACE
+          asdf install mlton ${{ matrix.mlton }}
+          asdf global mlton ${{ matrix.mlton }}
+          mlton
