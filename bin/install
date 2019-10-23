@@ -27,6 +27,10 @@ function install_mlton() {
   local version=$2
   local install_path=$3
 
+  if [ "$install_type" != "version" ]; then
+    fail "asdf-mlton supports release installs only"
+  fi
+
   local platform
 
   case "$OSTYPE" in
@@ -56,7 +60,7 @@ function install_mlton() {
     tar -zxf "$source_path" -C "$install_path" --strip-components=1 || fail "Could not uncompress"
     echo "The installation was successful!"
   ) || (
-    rm -rf $install_path
+    rm -rf "$install_path"
     fail "An error occurred"
   )
 }
