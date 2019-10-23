@@ -25,3 +25,10 @@ jobs:
           asdf install mlton ${{ matrix.mlton }}
           asdf global mlton ${{ matrix.mlton }}
           mlton
+
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Run ShellCheck
+        run: shellcheck bin/*
