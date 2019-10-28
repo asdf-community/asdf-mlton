@@ -1,6 +1,6 @@
 <div align="center">
 <h1>asdf-mlton 📦</h1>
-MLton plugin for asdf version manager
+<span><a href="http://mlton.org">MLton</a> plugin for asdf version manager</span>
 </div>
 <hr />
 
