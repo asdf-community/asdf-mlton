@@ -25,8 +25,6 @@ jobs:
         uses: asdf-vm/actions/plugin-test@v1.0.0
         with:
           command: mlton
-        env:
-          GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   test:
     runs-on: macos-latest
