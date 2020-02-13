@@ -25,7 +25,6 @@ sort_versions() {
 versions=$(
   git ls-remote --tags https://github.com/MLton/mlton.git |
     awk '!/({})/ {print $2}' |
-    awk 'gsub("refs/tags/", "")' |
     grep -Eo "[0-9]+" |
     sort_versions |
     xargs
