@@ -1,22 +1,19 @@
 name: Main workflow
 
 on:
-  push:
-    paths-ignore:
-      - "**.md"
-      - ".all-contributorsrc"
   pull_request:
-    paths-ignore:
-      - "**.md"
-      - ".all-contributorsrc"
+  push:
   schedule:
     - cron: "0 0 * * 5"
 
 jobs:
   plugin_test:
     strategy:
+      fail-fast: false
       matrix:
-        os: [macos-latest, ubuntu-latest]
+        os:
+          - macos-latest
+          - ubuntu-latest
 
     runs-on: ${{ matrix.os }}
 
@@ -33,14 +30,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install asdf
-        run: git clone https://github.com/asdf-vm/asdf.git $HOME/asdf
+      - name: Setup asdf
+        uses: asdf-vm/actions/setup@v1
 
       - name: Test plugin
         env:
           GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          . $HOME/asdf/asdf.sh
           asdf plugin-add mlton $GITHUB_WORKSPACE
           bats test
 
