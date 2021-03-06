@@ -26,6 +26,12 @@ install_mlton() {
   local install_type=$1
   local version=$2
   local install_path=$3
+  local build_release
+
+  # include build version in URL for macOS
+  if [[ $(uname -s) = Darwin ]]; then
+	  build_release=-19.6
+  fi
 
   if [ "$install_type" != "version" ]; then
     fail "asdf-mlton supports release installs only"
@@ -47,7 +53,7 @@ install_mlton() {
   esac
 
   if [[ "$platform" == "darwin" ]]; then
-    platform="${platform}.gmp-static"
+    platform="${platform}${build_release}.gmp-static"
   fi
 
   local download_url="https://github.com/MLton/mlton/releases/download/on-${version}-release/mlton-${version}-1.${architecture}-${platform}.tgz"
