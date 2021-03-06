@@ -1,21 +1,17 @@
 #!/usr/bin/env bash
-#
-# Copyright 2019 asdf-mlton authors
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
 
-set -eo pipefail
+set -Eeuo pipefail
+
+trap cleanup SIGINT SIGTERM ERR
+
+cleanup() {
+  trap - SIGINT SIGTERM ERR
+  rm -rf "$ASDF_INSTALL_PATH"
+  echo
+  echo -e "\e[33mCleanup:\e[m Something went wrong!"
+  echo
+  echo "$(caller): ${BASH_COMMAND}"
+}
 
 fail() {
   echo -e "\e[31mFail:\e[m $*"
@@ -34,8 +30,20 @@ install_mlton() {
   local platform
 
   case "$OSTYPE" in
-    darwin*) platform="darwin" ;;
-    linux*) platform="linux" ;;
+    darwin*)
+      if [[ $version -ge 20200817 ]]; then
+        platform="darwin-19.6.gmp-static"
+      else
+        platform="darwin.gmp-static"
+      fi
+      ;;
+    linux*)
+      if [[ $version -ge 20210107 ]]; then
+        platform="linux-glibc2.31"
+      else
+        platform="linux"
+      fi
+      ;;
     *) fail "Unsupported platform" ;;
   esac
 
@@ -46,23 +54,14 @@ install_mlton() {
     *) fail "Unsupported architecture" ;;
   esac
 
-  if [[ "$platform" == "darwin" ]]; then
-    platform="${platform}.gmp-static"
-  fi
-
   local download_url="https://github.com/MLton/mlton/releases/download/on-${version}-release/mlton-${version}-1.${architecture}-${platform}.tgz"
   local source_path="${install_path}/bin/mlton.tgz"
 
-  (
-    echo "∗ Downloading and installing mlton..."
-    mkdir -p "${install_path}/bin"
-    curl --silent --location --create-dirs --output "$source_path" "$download_url" || fail "Could not download"
-    tar -zxf "$source_path" -C "$install_path" --strip-components=1 || fail "Could not uncompress"
-    echo "The installation was successful!"
-  ) || (
-    rm -rf "$install_path"
-    fail "An error occurred"
-  )
+  echo "∗ Downloading and installing mlton..."
+  mkdir -p "${install_path}/bin"
+  curl --fail --silent --location --create-dirs --output "$source_path" "$download_url"
+  tar -zxf "$source_path" -C "$install_path" --strip-components=1
+  echo "The installation was successful!"
 }
 
 install_mlton "$ASDF_INSTALL_TYPE" "$ASDF_INSTALL_VERSION" "$ASDF_INSTALL_PATH"
