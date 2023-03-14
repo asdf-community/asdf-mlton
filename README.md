@@ -4,8 +4,6 @@
 
 ## Build History
 
-[![Build history](https://buildstats.info/github/chart/asdf-community/asdf-mlton?branch=master)](https://github.com/asdf-community/asdf-mlton/actions)
-
 ## Installation
 
 ```bash
